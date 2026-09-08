@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#f7f8fa">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-192.png">
+<meta name="description" content="AmirSim — כלי עזר חינוכי עצמאי לתרגול אמיר״ם. אינו קשור למאל״ו. שאלות האימון בסגנון הבחינה ולא ממבחן אמיתי."><title>AmirSim — סימולציה ותרגול אמיר"ם</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+.deckbtn { border:0; border-radius:6px; padding:10px 20px; cursor:pointer; font:600 14.5px var(--sans); box-shadow:0 1px 3px rgba(0,0,0,.12); }
+.deckbtn:hover { filter:brightness(1.08); }
+.deckbtn:active { transform:translateY(1px); }
+.deckbtn.ghost { background:#fff; }
+</style>
+<link rel="stylesheet" href="css/style.css" id="css-main">
+  <style id="css-failed-banner">
+    /* shown by JS below only when the stylesheet above didn't load */
+    #css-fail-note { display: none; font-family: Arial, sans-serif; direction: rtl;
+      margin: 24px auto; max-width: 560px; padding: 18px 22px; border: 3px solid #c0392b;
+      border-radius: 10px; background: #fff4f2; color: #7b241c; font-size: 15px; line-height: 1.7; }
+  </style>
+  </head>
+<body>
+<div class="screen">
+
+  <!-- ============ 1. ENTRY ============ -->
+  <div id="css-fail-note">
+      <b>⚠️ העיצוב לא נטען — כנראה שפתחת את הקובץ מתוך קובץ ה-zip.</b><br>
+      פתרון ב-20 שניות:<br>
+      1. מצאי את <b>amirnet-sim.zip</b> בהורדות.<br>
+      2. קליק ימני ← <b>"חילוץ הכול…"</b> (לא להיכנס לתוך ה-zip!).<br>
+      3. פתחי את תיקיית <b>amirnet-sim</b> שנוצרה.<br>
+      4. לחצי פעמיים על <b>index.html</b>.
+    </div>
+  <section id="scr-entry">
+    <div class="entry">
+      <div class="brand">AMIR<span class="net">Sim</span></div>
+      <div class="sub">בחינת ידע באנגלית — סימולציה ותרגול<br>סביבת אימון שאינה של מאל״ו · עודכנה למבנה הרשמי 39 דק'</div>
+
+      <div class="card">
+        <div id="entry-simple">
+          <label for="inp-who">השם שלך</label>
+          <input id="inp-who" type="text" placeholder="לדוגמה: נועה" autocomplete="off">
+          <button class="btn-primary" id="btn-enter">כניסה</button>
+          <div style="font-size:12.5px;color:var(--muted);margin-top:8px">השם יישמר — בכניסה הבאה רק תלחצי "כניסה".</div>
+        </div>
+        <details id="shared-wrap" style="margin-top:14px;border-top:1px solid var(--line);padding-top:12px">
+          <summary style="cursor:pointer;color:var(--muted);font-size:13px">👥 מחשב משותף? (מספר משתמשות + סיסמאות)</summary>
+          <div id="entry-users-wrap" style="margin-top:10px">
+            <label for="sel-user">משתמשת קיימת</label>
+            <select id="sel-user" style="width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:4px;font:14px var(--sans);background:var(--frame-inner);color:var(--ink)"></select>
+          </div>
+          <label for="inp-pass">סיסמה</label>
+          <input id="inp-pass" type="password" autocomplete="current-password">
+          <button class="btn-primary" id="btn-login">כניסה</button>
+          <div style="border-top:1px solid var(--line);margin:14px 0;padding-top:12px">
+            <label for="inp-new-user">משתמשת חדשה</label>
+            <input id="inp-new-user" type="text" placeholder="שם משתמש" autocomplete="off">
+            <input id="inp-new-pass" type="password" placeholder="סיסמה (אופציונלי)" autocomplete="new-password">
+            <button class="icon-btn" id="btn-register" style="border:1px solid var(--link-blue);color:var(--link-blue);border-radius:4px;padding:8px 14px;cursor:pointer;width:100%">יצירת משתמשת חדשה</button>
+          </div>
+        </details>
+        <details style="margin-top:4px">
+          <summary style="cursor:pointer;color:var(--muted);font-size:13px">📦 יבוא חבילת משתמשת (קובץ ממחשב אחר)</summary>
+          <input type="file" id="inp-bundle" accept=".json" hidden>
+          <button class="icon-btn" id="btn-import-bundle" style="border:1px solid var(--line);color:var(--ink);border-radius:4px;padding:8px 14px;cursor:pointer;width:100%;margin-top:6px">בחירת קובץ חבילה…</button>
+          <div id="bundle-note" style="font-size:12.5px;color:var(--muted);margin-top:4px"></div>
+        </details>
+        <button class="icon-btn" id="btn-install-app" style="display:none;border:2px solid var(--green);color:var(--green);border-radius:4px;padding:10px 18px;cursor:pointer;width:100%;margin-top:10px;font-weight:600" onclick="__installEvt.prompt()">📲 התקנה כאפליקציה בפלאפון (אייקון במסך הבית)</button>
+        <div id="entry-phone-wrap" style="display:none">
+          <label for="inp-phone-name">השם שלך (יוצג באפליקציה)</label>
+          <input id="inp-phone-name" type="text" placeholder="לדוגמה: נועה" autocomplete="off">
+          <button class="btn-primary" id="btn-phone-start" style="width:100%;margin-top:8px">בואי נתחיל</button>
+          <div style="font-size:12px;color:var(--muted);margin-top:8px">בפלאפון הכול נשמר במכשיר — בלי משתמשים ובלי סיסמאות.</div>
+        </div>
+        <div id="entry-note" style="font-size:12.5px;color:#c0392b;margin-top:6px"></div>
+        <button id="btn-terms" style="background:transparent;border:0;color:var(--muted);font-size:12px;cursor:pointer;margin-top:10px;text-decoration:underline">תנאי שימוש</button>
+        <div id="terms-modal" style="display:none;position:fixed;inset:0;background:rgba(30,38,46,.62);z-index:1100;align-items:center;justify-content:center;padding:20px">
+          <div dir="rtl" style="background:#ffffff;border-radius:12px;padding:24px;max-width:520px;width:100%;max-height:80vh;overflow-y:auto;box-shadow:0 12px 48px rgba(0,0,0,.35)">
+            <h3 style="margin:0 0 12px;color:var(--brand-blue-deep,#20506f)">תנאי שימוש — AmirSim</h3>
+            <div style="font-size:13.5px;line-height:1.75;color:var(--ink,#22313f)">
+              <p style="margin:0 0 8px"><b>1. כלי עזר עצמאי.</b> AmirSim הוא כלי תרגול פרטי ועצמאי. האתר אינו מופעל, אינו מאושר ואינו קשור בשום דרך למאל״ו (המרכז הארצי לבחינות ולהערכה) או למוסדות אקדמיים כלשהם.</p>
+              <p style="margin:0 0 8px"><b>2. אין אחריות לתוצאות.</b> הציונים והמשוב באתר הם הערכה חינוכית בלבד ואינם מחייבים, עשויים שלא לשקף את הציון בבחינה האמיתית, ואינם ערובה להצלחה בבחינה.</p>
+              <p style="margin:0 0 8px"><b>3. שאלות בסגנון הבחינה.</b> שאלות האימון המובנות נכתבו בסגנון שאלות האנגלית בבחינה, ולא נלקחו ממבחן אמיתי.</p>
+              <p style="margin:0 0 8px"><b>4. אחריות המשתמש/ת על קבצים מיובאים.</b> הייבוא של קובצי PDF/CSV נעשה על ידי המשתמש/ת ומתוכנם, והאחריות לשימוש חוקי בקבצים אלה חלה על המשתמש/ת בלבד. האתר אינו מפיץ ואינו מאחסן קבצים.</p>
+              <p style="margin:0 0 8px"><b>5. פרטיות.</b> כל הנתונים (התקדמות, מילים, תרגומים) נשמרים במכשיר המקומי בלבד ואינם נשלחים לשרת כלשהו. מחיקת נתוני הדפדפן תמחק את ההיסטוריה — מומלץ לגבות באמצעות קובץ חבילה.</p>
+              <p style="margin:0 0 8px"><b>6. מפתח AI (אופציונלי).</b> מפתח ה-API (למשל Gemini) שהמשתמש/ת מזין/ה נשמר בדפדפן המקומי בלבד, אינו מועבר לשרת האתר, והשימוש בו (כולל עלויות והגבלות ספק) הוא באחריות המשתמש/ת הבלעדית.</p>
+              <p style="margin:0"><b>7. המשך שימוש = הסכמה</b> לתנאים אלה.</p>
+            </div>
+            <button id="terms-x" style="width:100%;margin-top:14px;padding:11px;border:1px solid var(--header-line,#d3d7d9);border-radius:8px;background:var(--brand-blue,#2b6a9e);color:#fff;font-size:14.5px;cursor:pointer">הבנתי</button>
+          </div>
+        </div>
+        <div class="note">
+          AmirSim הוא כלי עזר חינוכי עצמאי, שאינו של מאל״ו ואינו מטעמו. שאלות האימון
+          המובנות בסגנון הבחינה בלבד. הנתונים נשמרים במכשיר שלך. <u id="terms-link" style="cursor:pointer">תנאי שימוש</u>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 2. HOME ============ -->
+  <section id="scr-home" hidden>
+    <div class="home">
+      <div class="home-head">
+        <div class="brand-net" style="font-size:40px">AMIR<span style="color:var(--brand-blue);font-style:normal">Sim</span> <span style="font-size:17px;color:var(--muted);font-family:var(--sans)">סביבת תרגול</span></div>
+      </div>
+      <h1>שלום, <span id="home-name">נבחן</span></h1>
+      <p class="tagline">בחרי מצב תרגול. בכל המצבים נאסף דוח מלא עם פתרונות והסברים בסיום.</p>
+      <div style="margin:0 0 14px"><label style="font-size:13.5px;color:var(--muted)"><input type="checkbox" id="chk-adaptive" checked> מצב אדפטיבי במבחן המלא (כמו במקור)</label></div>
+      <div style="margin:0 0 14px;display:flex;gap:14px;align-items:center;flex-wrap:wrap" id="source-filter">
+        <span style="font-size:13.5px;color:var(--muted)" id="source-filter-title">מקור השאלות במבחן:</span>
+        <label style="font-size:13.5px"><input type="radio" name="src" value="builtin" checked> מקוריות בלבד</label>
+        <label style="font-size:13.5px"><input type="radio" name="src" value="user"> שאלות שייבאתי בלבד</label>
+        <label style="font-size:13.5px"><input type="radio" name="src" value="mix"> ערבוב של שתיהן</label>
+        <span id="source-note" style="font-size:12.5px;color:var(--muted)" hidden>עדיין לא ייבאת שאלות — המאגר האישי ריק.</span>
+      </div>
+
+      <div class="modes">
+        <div class="mode" data-mode="full">
+          <h2>מבחן סימולציה מלא</h2>
+          <p>6 פרקים, 23 שאלות, 39 דקות כמו באמירנט האמיתית: 3× השלמת משפטים (4 שאלות, 4 דק׳), קטע קריאה (5 שאלות, 15 דק׳) ו-2× ניסוח מחדש (3 שאלות, 6 דק׳). ציון בסולם 50–150 וקו הפטור 134.</p>
+          <span class="go">התחלה ›</span>
+        </div>
+        <div class="mode express" data-mode="express">
+          <h2>אימון מהיר (פרק בודד)</h2>
+          <p>תרגול פרק אחד לבחירתך בזמן שהוקצב לו במקור — השלמת משפטים 4 דק׳, ניסוח מחדש 6 דק׳, קטע קריאה 15 דק׳.</p>
+          <span class="go">התחלה ›</span>
+        </div>
+        <div class="mode drill" data-mode="practice">
+          <h2>תרגול ללא הגבלת זמן</h2>
+          <p>אותן שאלות, בלי שעון. מתאים ללימוד אוצר מילים ולבניית ביטחון. בסיום — פירוט שגיאות והסברים.</p>
+          <span class="go">התחלה ›</span>
+        </div>
+        <div class="mode vocab" data-mode="vocab">
+          <h2>אימון אוצר מילים (SRS)</h2>
+          <p>כרטיסיות בסגנון Anki עם חזרה מרווחת: מילים נפוצות מרשימת NAWL האקדמית + המילים שסימנת בעצמך בדאבל-קליק. התרגום נשלף אוטומטית עם מפתח Gemini.</p>
+          <span class="go">התחלה ›</span>
+        </div>
+        <div class="mode progress" data-mode="progress">
+          <h2>ההתקדמות שלי</h2>
+          <p>שיפור לפי סוג שאלה, מילים שנשלטות מול כאלה שדורשות חזרה, וציוני סימולציות לאורך זמן — נשמר אצלך במחשב גם אחרי רענון.</p>
+          <span class="go">צפייה ›</span>
+        </div>
+        <div class="mode import" data-mode="import">
+          <h2>ייבוא שאלות מבחינות עבר (PDF)</h2>
+          <p>העלי קבצי PDF של בחינות התנסות פסיכומטרי — המערכת תחלץ את פרקי האנגלית בלבד ותוסיף אותם למאגר האישי שלך (נשמר במחשב זה).</p>
+          <span class="go">העלאה ›</span>
+        </div>
+        <div id="home-hint-new" dir="rtl" style="grid-column:1/-1;display:none;background:#eef5ff;border:1px solid var(--brand-blue);border-radius:6px;padding:10px 14px;font-size:13.5px;color:var(--ink)"></div>
+        <div id="home-last" style="grid-column:1/-1"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3. SECTION INTRO ============ -->
+  <section id="scr-intro" hidden>
+    <div class="section-intro">
+      <div class="box">
+        <h2 id="intro-title">פרק 1 — השלמת משפטים</h2>
+        <div class="meta" id="intro-meta"></div>
+        <div id="intro-body"></div>
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:6px">
+          <button class="btn-primary" id="btn-start-section">התחלי את הפרק</button>
+          <button class="icon-btn" id="btn-intro-menu" style="border:1px solid var(--line);background:var(--frame-inner);border-radius:4px;padding:10px 20px;cursor:pointer;color:var(--ink)">🏠 חזרה לתפריט</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 4. EXAM ============ -->
+  <section id="scr-exam" hidden style="display:flex;flex-direction:column;min-height:100vh">
+    <div class="topbar">
+      <div class="progress-strip" id="progress-strip"></div>
+    </div>
+    <div class="toolbar">
+      <div class="qnums" id="qnums"></div>
+      <div class="spacer"></div>
+      <span class="qtimer" id="qtimer" hidden></span>
+      <span class="timer" id="timer">04:00</span>
+      <button class="icon-btn" id="btn-hide-timer" title="הסתר/הצג שעון">⏱</button>
+      <button class="icon-btn" id="btn-instr">Show Instructions</button>
+      <button class="icon-btn" id="btn-flag">⚑ Flag</button>
+      <button class="icon-btn" id="btn-home-menu" title="חזרה לתפריט הראשי">🏠 תפריט</button>
+      <button class="icon-btn exit" id="btn-exit" title="סיום וצפייה בתוצאות">✕ סיום</button>
+    </div>
+
+    <div class="exam-body" id="exam-body">
+      <div class="pass-col" id="pass-col"></div>
+      <div class="qcol" id="qcol"></div>
+      <button class="icon-btn restore-q" id="btn-restore-questions" hidden>◀ Show Questions</button>
+    </div>
+
+    <div class="navrow">
+      <button class="btn" id="btn-prev">‹ הקודם</button>
+      <span style="color:var(--muted);font-size:13.5px" id="navnote"></span>
+      <button class="btn btn-primary" id="btn-next">הבא ›</button>
+      <button class="btn btn-primary" id="btn-next-section" style="display:none">Next Section ›</button>
+    </div>
+
+    <div class="instr" id="instr" hidden></div>
+  </section>
+
+  <!-- ============ 5. RESULTS ============ -->
+  <section id="scr-results" hidden>
+    <div class="results">
+      <div class="score-hero">
+        <div style="color:var(--muted)">ציון משוער בסולם אמירנט (50–150)</div>
+        <div class="bignum" id="res-score">—</div>
+        <div class="pct" id="res-pct"></div>
+        <div id="res-gap" dir="rtl" style="font-size:14px;color:var(--muted);margin-top:4px"></div>
+        <div class="band" id="res-band"></div>
+        <div id="res-adaptive-note" style="color:var(--muted);font-size:13.5px;margin-top:10px"></div>
+      </div>
+      <h3 id="res-drilldown-title" style="margin:26px 0 10px">פירוט לפי פרקים</h3>
+      <div id="res-table"></div>
+      <h3 style="margin:26px 0 10px">מענה על שאלות עם הסברים</h3>
+      <div id="res-review"></div>
+      <button class="btn-primary" id="btn-again-drill" style="margin-top:18px;background:var(--green);color:#fff;border:0;padding:12px 30px;font:600 16px var(--sans);border-radius:4px;cursor:pointer">תרגול נוסף מאותו סוג</button>
+      <button class="btn-primary" id="btn-back-home" style="margin-top:18px;background:var(--brand-blue);color:#fff;border:0;padding:12px 30px;font:600 16px var(--sans);border-radius:4px;cursor:pointer">חזרה לתפריט</button>
+    </div>
+  </section>
+
+  <!-- ============ 6. VOCAB ============ -->
+  <section id="scr-vocab" hidden>
+    <div class="vocab">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h2 style="margin:0">אימון אוצר מילים — חזרה מרווחת (בסגנון Anki)</h2>
+          <button class="icon-btn" id="btn-vocab-exit" style="border:1px solid var(--line);background:var(--frame-inner);border-radius:4px;padding:6px 12px;cursor:pointer;color:var(--ink)">יציאה</button>
+        </div>
+        <div style="display:flex;gap:8px;margin:12px 0 0;flex-wrap:wrap">
+          <button class="deckbtn" id="btn-deck-common" style="background:var(--brand-blue);color:#fff">📚 מילים נפוצות (NAWL)</button>
+          <button class="deckbtn" id="btn-deck-mine" style="background:var(--green);color:#fff">⭐ המילים שסימנתי</button>
+          <button class="deckbtn" id="btn-deck-lapses" style="background:#c0392b;color:#fff">🎯 מילים משאלות שטעיתי</button>
+          <button class="icon-btn" id="btn-ai-quiz" style="border:1px solid var(--link-blue);color:var(--link-blue);border-radius:4px;padding:6px 14px;cursor:pointer">🤖 מחולל שאלות AI</button>
+        </div>
+        <div style="display:flex;gap:8px;margin:8px 0 0;flex-wrap:wrap">
+          <button class="deckbtn ghost" id="btn-browse-common" style="background:#fff;color:var(--brand-blue);border:2px solid var(--brand-blue)">📋 רשימת המילים הנפוצות</button>
+          <button class="deckbtn ghost" id="btn-browse-mine" style="background:#fff;color:var(--green);border:2px solid var(--green)">📋 רשימת המילים שסימנתי</button>
+        </div>
+        <div id="drill-dir-wrap" style="margin-top:4px"></div>
+        <div style="color:var(--muted);margin-top:8px" id="vocab-progress">מילה 1 מתוך —</div>
+        <div style="text-align:center;margin:26px 0 8px">
+          <div class="word" id="vocab-word">word</div>
+          <div class="hintbox" id="vocab-hint" dir="rtl"></div>
+        </div>
+        <div class="choices" id="vocab-choices"></div>
+        <div id="vocab-grade" style="display:none;margin-top:14px;text-align:center">
+          <button class="icon-btn" id="vg-again" style="border:1px solid #c0392b;color:#c0392b;border-radius:4px;padding:8px 16px;cursor:pointer;margin:4px">שוב (0)</button>
+          <button class="icon-btn" id="vg-hard" style="border:1px solid #c9a227;color:#8a6d00;border-radius:4px;padding:8px 16px;cursor:pointer;margin:4px">קשה (1)</button>
+          <button class="icon-btn" id="vg-good" style="border:1px solid var(--green);color:var(--green);border-radius:4px;padding:8px 16px;cursor:pointer;margin:4px">טוב (2)</button>
+          <button class="icon-btn" id="vg-easy" style="border:1px solid var(--link-blue);color:var(--link-blue);border-radius:4px;padding:8px 16px;cursor:pointer;margin:4px">קל (3)</button>
+        </div>
+        <div style="margin-top:16px;text-align:center;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+          <button class="icon-btn" id="btn-vocab-reveal" style="color:var(--link-blue);border:1px solid var(--line);border-radius:4px;padding:8px 18px;cursor:pointer">רמז (הגדרה חלקית)</button>
+          <button class="icon-btn" id="btn-ai-define" style="color:var(--link-blue);border:1px solid var(--link-blue);border-radius:4px;padding:8px 18px;cursor:pointer">🤖 הגדרה ודוגמה מה-AI</button>
+        </div>
+        <div id="vocab-ai-out" dir="rtl" style="text-align:center;font-size:13.5px;margin-top:8px;min-height:0"></div>
+        <details id="gemini-panel" style="margin-top:14px;border-top:1px solid var(--line);padding-top:12px">
+          <summary style="cursor:pointer;color:var(--muted);font-size:13px">⚙️ חיבור AI (Gemini / OpenAI — אופציונלי)</summary>
+          <button id="btn-ai-audit" style="width:100%;margin:10px 0 4px;padding:10px;border:1.5px solid var(--brand-blue,#2b6a9e);border-radius:8px;background:var(--frame-inner);color:var(--brand-blue-deep,#20506f);font-size:14px;font-weight:600;cursor:pointer">בדיקת AI של התרגומים (בדיקה + תיקון + השלמה)</button>
+          <div id="audit-status" dir="rtl" style="font-size:12.5px;color:var(--muted);margin-bottom:6px"></div>
+          <div id="key-privacy-note" dir="rtl" style="font-size:12px;color:var(--muted);background:var(--frame-inner);border:1px solid var(--line);border-radius:6px;padding:8px 12px;margin:8px 0">
+            🔒 המפתח נשמר <b>בדפדפן שלך בלבד</b> (localStorage) ואינו מועבר לשרת האתר — הוא נשלח ישירות לספק ה-AI בלבד. האחריות לשמירת המפתח ולעלויות השימוש חלה עליך.
+          </div>
+          <div style="display:flex;gap:6px;margin:4px 0 8px">
+            <button class="icon-btn" id="prov-gemini" data-prov="gemini" style="border:2px solid var(--link-blue);border-radius:4px;padding:4px 14px;cursor:pointer;font-size:12.5px;color:var(--link-blue)">Google Gemini</button>
+            
+          <label style="font-size:13px;color:var(--muted)">מפתח API — נשמר פעם אחת, לא צריך להזין שוב (נמחק רק באיפוס מלא):</label>
+          <div style="display:flex;gap:8px;margin-top:6px">
+            <input id="inp-gemini-key" type="password" placeholder="AIza… / sk-…" autocomplete="off"
+                   style="flex:1;padding:9px 12px;border:1px solid var(--line);border-radius:4px;font:14px var(--sans);background:var(--frame-inner);color:var(--ink)">
+            <button class="icon-btn" id="btn-save-gemini" style="border:1px solid var(--line);border-radius:4px;padding:6px 14px;cursor:pointer;color:var(--ink)">שמירה</button>
+          </div>
+          <div id="gemini-note" style="font-size:12.5px;color:var(--muted);margin-top:4px"></div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 8. PROGRESS ============ -->
+  <section id="scr-progress" hidden>
+    <div class="vocab">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h2 style="margin:0">ההתקדמות שלי</h2>
+          <button class="icon-btn" id="btn-progress-exit" style="border:1px solid var(--line);background:var(--frame-inner);border-radius:4px;padding:6px 12px;cursor:pointer;color:var(--ink)">יציאה</button>
+        </div>
+        <div class="card" id="manual-entry-card" style="margin-bottom:16px">
+          <h3 style="margin:0 0 10px">✍️ הזנה ידנית של תשובה</h3>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end" dir="rtl">
+            <div><label style="font-size:12px;color:var(--muted);display:block">סוג</label>
+              <select id="me-type" style="padding:7px 10px;border:1px solid var(--line);border-radius:4px;background:var(--frame-inner);color:var(--ink)">
+                <option value="sc">השלמת משפטים</option>
+                <option value="restate">ניסוח מחדש</option>
+                <option value="reading">קריאה</option>
+              </select></div>
+            <div style="flex:1;min-width:180px"><label style="font-size:12px;color:var(--muted);display:block">מקור (ליד)</label>
+              <input id="me-src" type="text" placeholder="למשל: מבחן אמירן חורף 2025" style="width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:4px;background:var(--frame-inner);color:var(--ink)" dir="rtl"></div>
+            <div><label style="font-size:12px;color:var(--muted);display:block">תוצאה</label>
+              <select id="me-ok" style="padding:7px 10px;border:1px solid var(--line);border-radius:4px;background:var(--frame-inner);color:var(--ink)">
+                <option value="1">עניתי נכון ✓</option>
+                <option value="0">טעיתי ✗</option>
+                <option value="batch">כמה שאלות (מספר נכונות מתוך כמות)…</option>
+              </select></div>
+            <div id="me-batch-wrap" style="display:none;gap:6px;align-items:flex-end">
+              <div><label style="font-size:12px;color:var(--muted);display:block">נכונות</label>
+                <input id="me-right" type="number" min="0" max="60" value="0" style="width:70px;padding:7px 8px;border:1px solid var(--line);border-radius:4px;background:var(--frame-inner);color:var(--ink)"></div>
+              <div><label style="font-size:12px;color:var(--muted);display:block">מתוך</label>
+                <input id="me-total" type="number" min="1" max="60" value="1" style="width:70px;padding:7px 8px;border:1px solid var(--line);border-radius:4px;background:var(--frame-inner);color:var(--ink)"></div>
+            </div>
+            <div><label style="font-size:12px;color:var(--muted);display:block">תאריך</label>
+              <input id="me-date" type="date" style="padding:7px 8px;border:1px solid var(--line);border-radius:4px;background:var(--frame-inner);color:var(--ink)"></div>
+            <button id="btn-me-add" class="icon-btn" style="border:1px solid var(--green);color:var(--green);border-radius:4px;padding:8px 16px;cursor:pointer;font-weight:600">הוסיפי להיסטוריה</button>
+          </div>
+          <div id="me-status" dir="rtl" style="font-size:12.5px;color:var(--muted);margin-top:6px"></div>
+        </div>
+        <div id="progress-body"></div>
+
+        <details style="margin-top:12px">
+          <summary style="cursor:pointer;color:var(--muted);font-size:13.5px">📦 חבילה למחשב אחר (גיבוי / העברה)</summary>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">
+            <button class="icon-btn" id="btn-export-bundle" style="background:var(--link-blue);color:#fff;border:0;border-radius:4px;padding:8px 16px;cursor:pointer">הורדת חבילה שלי (.json)</button>
+            <input type="file" id="inp-import-bundle-here" accept=".json" hidden>
+            <button class="icon-btn" id="btn-import-bundle-here" style="border:1px solid var(--line);color:var(--ink);border-radius:4px;padding:8px 16px;cursor:pointer">ייבוא חבילה למשתמשת קיימת…</button>
+            <button class="icon-btn" id="btn-change-pass" style="border:1px solid var(--line);color:var(--ink);border-radius:4px;padding:8px 16px;cursor:pointer">שינוי סיסמה</button>
+          </div>
+          <div id="bundle-here-note" style="font-size:12.5px;color:var(--muted);margin-bottom:8px"></div>
+        </details>
+        <details style="margin-top:8px">
+          <summary style="cursor:pointer;color:var(--muted);font-size:13.5px">איפוס נתונים (התחלה מחדש)</summary>
+          <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+            <button class="icon-btn" id="btn-reset-progress" style="border:1px solid var(--line);border-radius:4px;padding:8px 16px;cursor:pointer;color:var(--ink)">מחיקת התקדמות ודוחות</button>
+            <button class="icon-btn" id="btn-reset-all" style="border:1px solid #c0392b;color:#c0392b;border-radius:4px;padding:8px 16px;cursor:pointer">איפוס מלא — מחיקת הכול</button>
+          </div>
+          <div id="reset-note" style="font-size:12.5px;color:var(--muted);margin-top:6px">מחיקת ההתקדמות שומרת את השאלות שייבאת ואת מילות האוצר. האיפוס המלא מוחק הכול, כולל מפתח Gemini.</div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 7. PDF IMPORT ============ -->
+  <section id="scr-import" hidden>
+    <div class="import-page">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h2 style="margin:0">ייבוא שאלות מבחינות עבר</h2>
+          <button class="icon-btn" id="btn-import-exit" style="border:1px solid var(--line);background:var(--frame-inner);border-radius:4px;padding:6px 12px;cursor:pointer;color:var(--ink)">יציאה</button>
+        </div>
+
+        <div class="steps">
+          <b>איך זה עובד:</b>
+          <ol>
+            <li>העלי PDF של בחינת התנסות פסיכומטרית (בעברית, עם פרקי אנגלית)</li>
+            <li>המערכת תזהה אוטומטית את פרקי האנגלית — השלמת משפטים, ניסוח מחדש וקטעי קריאה</li>
+            <li>רלוונטי גם קובץ מפתח תשובות — אם תעלי אותו, התשובות ישובצו אוטומטית</li>
+            <li>תאשרי את השאלות שנמצאו והן יתווספו למאגר האישי שלך</li>
+          </ol>
+        </div>
+
+        <div class="dropzone" id="dropzone">
+          <input type="file" id="file-input" accept="application/pdf,.csv,.tsv,.txt" multiple hidden>
+          <div class="dz-inner">
+            <div style="font-size:34px">📄</div>
+            <b>גררי לכאן קובצי PDF (שאלות) או CSV/TSV (מילים)</b>
+            <span style="color:var(--muted)">או</span>
+            <button class="btn-primary" id="btn-browse" style="margin:0;width:auto;padding:10px 26px">בחירת קבצים</button>
+          </div>
+        </div>
+
+        <div id="import-status" hidden></div>
+
+        <div style="margin-top:18px;border-top:1px solid var(--line);padding-top:12px">
+          <h3 style="margin:0 0 8px;font-size:15px">המקורות שייבאת</h3>
+          <div id="sources-list"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- a11y floating person (as in the official interface) -->
+  <div class="a11y" id="a11y">
+    <button class="fab" id="btn-a11y" title="נגישות">♿</button>
+    <div class="panel">
+      <h4>Accessibility</h4>
+      <button id="acc-night">Night mode</button>
+      <button id="acc-enlarge">Enlarge</button>
+      <button id="acc-mark">Mark interactive elements</button>
+      <button id="acc-cursor">Enlarged cursor</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/data-en.js"></script>
+<script src="js/data-vocab-deck.js"></script>
+<script src="js/data-he-gloss.js"></script>
+<script src="js/vocab-srs.js"></script>
+<script src="js/vocab-ui.js"></script>
+<script src="js/q-srs.js"></script>
+<script src="js/data-rc-he.js"></script>
+<script src="js/data-he.js"></script>
+<script src="js/pdf.js"></script>
+<script src="js/importer.js"></script>
+<script src="js/users.js"></script>
+<script src="js/app.js"></script>
+<script>
+/* PWA: offline support + install prompt */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+let __installEvt = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); __installEvt = e; paintInstallBtn(); });
+function paintInstallBtn() {
+  const el = document.getElementById('btn-install-app');
+  if (el) el.style.display = __installEvt ? '' : 'none';
+}
+</script>
+<script>
+(function checkIntegrity() {
+  function fail(msg) {
+    var el = document.getElementById('css-fail-note');
+    if (el) { el.style.display = 'block'; if (msg) el.insertAdjacentHTML('afterbegin', '<div style="margin-bottom:8px">' + msg + '</div>'); }
+  }
+  window.addEventListener('load', function () {
+    /* CSS loaded? (a known rule must exist) */
+    var cssOk = false;
+    try { for (var i = 0; i < document.styleSheets.length; i++) { try { if (document.styleSheets[i].cssRules && document.styleSheets[i].cssRules.length) { cssOk = true; break; } } catch (e) {} } } catch (e) {}
+    if (!cssOk) fail('');
+    /* critical JS present? */
+    if (typeof listUsers !== 'function' || typeof show !== 'function') {
+      fail('⚠️ קבצי התוכנה לא נטענו — העתקי את התיקייה כולה, לא רק index.html.');
+    }
+  });
+})();
+</script>
+</body>
+</html>
