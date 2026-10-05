@@ -1,0 +1,53 @@
+/* STICKY QUESTION COLUMN + paragraph spacing — PASSAGE-LAYOUT v3
+   The passage column scrolls INSIDE itself while the questions column
+   stays in place. Uses plain overflow (no :has dependency). */
+
+/* when the exam screen is visible the app frame must not scroll itself —
+   the two inner columns scroll instead. scr-exam is display:flex child */
+html, body { height: 100%; }
+
+#scr-exam {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#scr-exam .topbar,
+#scr-exam .toolbar,
+#scr-exam .navrow {
+  flex: none;
+}
+
+#scr-exam .exam-body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.pass-col,
+.qcol {
+  overflow-y: auto;
+  height: 100%;
+  min-height: 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* CLEAR paragraph breaks — a visible gap between paragraphs */
+.pass-col .passage p {
+  margin: 0 0 22px;
+  line-height: 1.8;
+}
+.pass-col .passage p:last-child { margin-bottom: 12px; }
+
+/* phone: text above (scrolls), questions below (own scroll) */
+@media (max-width: 720px) {
+  #scr-exam .exam-body { flex-direction: column-reverse; }
+  #scr-exam .qcol {
+    width: 100%; max-width: none;
+    max-height: 58vh;
+    border-inline-end: 0;
+    border-top: 1px solid var(--line);
+  }
+  #scr-exam .pass-col { max-height: 42vh; height: auto; }
+}
